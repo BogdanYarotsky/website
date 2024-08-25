@@ -2,7 +2,7 @@
   "name": "ui",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://yBogdanYarotsky.github.io/website/",
+  "homepage": "https://yarotsky.net/",
   "type": "module",
   "scripts": {
     "dev": "vite",
