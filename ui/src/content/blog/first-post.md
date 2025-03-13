@@ -5,12 +5,58 @@ pubDate: 'Jul 08 2022'
 heroImage: '/blog-placeholder-3.jpg'
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
+# Azure Functions with Rust
 
-Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.
+TLDR; Jump to the quickstart section for the step-by-step code
 
-Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
+## Introduction
 
-Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.
+Serverless functions lure developers and managers with a simple promise - pay only for what you use. The less resources you use, the lower is the paycheck the cloud provider will biil you in the end of the month. I personally also like to think about this as environment-friendly development.
 
-Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
+Azure documentation has straightforward quickstart guides for .NET, Python, Node.js, Java. But these technologies are not the optimal choices to maximize the power of serverless computing. They are either slow (Python, JS) or memory-hungry (.NET, Java). Usually teams accept those drawbacks for the improved speed of development until cloud compute costs become the bottleneck for them.
+
+Rust is one obvious solution to the problem because of it's unique combination of strenghts:
+1. Efficiency on par with C
+2. Top-notch developer experience (modern, safe, expressive language)
+
+Being a .NET developer during daytime, I decided to stick with Azure, namely their Functions offering to write a simple HTTP web hook in Rust. Microsoft has kindly documented how to get started but to my shock their guide is lackluster at the time of writing of this article.
+
+First of all, following the guide didn't yield a working applicaton in the cloud because in the documentation it's assumed that a Function created in Azure is running Linux by default which was not a case for me. I've spent some time troubleshooting this since there were not obvious logs in the Azure Portal.
+
+Another problem with the guide is over-reliance on GUI to deploy an app. A lot of magic is happening under the hood when using Visual Studio Code extension and it also takes more time to get going than a bunch of CLI commands.
+
+The third reason why I write my own guide is that Microsoft's documentation uses Rust library called "warp". It's a very surprising choice since there is much more popular framework for building HTTP servers called "axum" which is current state-of-the-art in the rust ecosystem. Both libraries have equal performance (source) but axum offers simpler API to get started and beter community support.
+
+Without further ado:
+
+## Quickstart
+
+### Requirments
+
+1. Active Azure subscription
+2. Installed Azure CLI (az)
+3. Installed Rust toolchain (cargo, rustup)
+4. Installed Azure Functions Core Tools (func)
+
+### Steps
+
+1. func init --worker-runtime custom
+2. Add "enableForwardingHttpRequest": true to customHandler config in host.json
+3. func new --template "HTTP Trigger" --name "func"
+4. Minimal axum setup
+5. build + func start to validate
+6. az login
+7. az group create --name <your-resource-group-name> --location <your-location>
+8. az storage account create --name <yourstorageaccountname> --location <your-location> --resource-group <your-resource-group-name> --sku Standard_LRS
+9. az functionapp create --resource-group telegramtrigger2 --storage-account telegramtrigger2 --os-type Linux --name telegramtrigger2 --functions-version 4 --consumption-plan-location germanywestcentral --runtime custom
+10. func azure functionapp publish <your-function-app-name>
+
+
+
+
+
+
+
+
+
+
